@@ -1,16 +1,19 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Player from './Player'
 import PlayerContainer from './PlayerContainer'
+import Pot from './Pot'
+import { StateContext } from './context/StateContext'
+import DiceTable from './DiceTable'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {count, setCount} = useContext(StateContext)
 
   return (
     <>
-
+    <DiceTable/>
+    <Pot/>
     <PlayerContainer/>
       <div>
         <a href="https://vitejs.dev" target="_blank">
