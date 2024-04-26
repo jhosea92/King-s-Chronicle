@@ -1,9 +1,14 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import './App.css'
+import { StateContext } from "./context/StateContext";
+
 
 function Player(props){
 
   const [playerName, setPlayerName] = useState('');
+  const {di, setDi} = useContext(StateContext)
+  const {totalPot, setTotalPot} = useContext(StateContext)
+
 
   const onPlayerNameUpdate = (e) => {
     e.preventDefault();
@@ -12,6 +17,14 @@ function Player(props){
   }
 
   const placeholder = 'Player' + props.num;
+
+  const rollDi = (e) =>{
+
+    setTotalPot(totalPot +1)
+
+    const roll = Math.floor(Math.random() * (6 - 1) + 1)
+    setDi(roll);
+  }
 
   return(
     <>
@@ -25,6 +38,10 @@ function Player(props){
         onChange={onPlayerNameUpdate}
         />
       </form>
+
+      <button onClick={rollDi}> 
+        Roll
+      </button>
     </>
   )
 
