@@ -26,15 +26,22 @@ const removePlayer = (e) =>{
   if(playerCount >1) setPlayerCount(playerCount -1)
 }
 
+const style = {
+    display: 'flex',
+    margin: 'auto',
+    border: '3px solid green',
+    padding: '10px'
+}
+
 return(
-  <>
+  <div class="flex-container" style={style}>
    {!gameOn && 
    (<>
    <button onClick={addPlayer}> Add Player</button>
     <button onClick={removePlayer}> Remove Player</button>
     </>)}
     {players}
-  </>
+  </div>
   
 )
 

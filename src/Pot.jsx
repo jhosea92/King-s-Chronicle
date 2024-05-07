@@ -3,10 +3,12 @@ import { StateContext } from "./context/StateContext"
 
 function Pot(){
 
-  const {totalPot, setTotalPot, gameOn} = useContext(StateContext)
+  const {totalPot, setTotalPot, gameOn, playerCount} = useContext(StateContext)
 
   useEffect(()=>{
-    if(!gameOn) setTimeout(()=>setTotalPot(0), 3000)
+    if(gameOn) setTotalPot(totalPot + playerCount)
+
+    if(!gameOn) setTimeout(()=>setTotalPot(0), 2000)
   },[gameOn])
 
   return(
