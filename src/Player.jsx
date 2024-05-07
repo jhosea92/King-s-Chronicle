@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from "react";
-import './App.css'
+//import './App.css'
 import { StateContext } from "./context/StateContext";
 
 
@@ -15,7 +15,7 @@ function Player(props){
   const[localKing, setLocalKing] = useState(false)
 
 
-  const {di, setDi, totalPot, setTotalPot, gameOn, setGameOn, turn, playerCount, outCount, setOutCount, king, kingDi, duplicate, setDuplicate, setEndTurn, setKing, setKingDi, duel, setDuel} = useContext(StateContext)
+  const {di, setDi, totalPot, setTotalPot, gameOn, setGameOn, turn, playerCount, outCount, setOutCount, king, kingDi, duplicate, setDuplicate, setEndTurn, setKing, setKingDi, duel, setDuel, setChallengerDi, setDefenderDi} = useContext(StateContext)
 
   //if the king changes, updates player component to turn crown on or off
   useEffect(() => {
@@ -55,6 +55,8 @@ function Player(props){
   //if the game is turned off, players statuses updates
   useEffect(() => {
 
+    if(gameOn) setPurse(purse -1)
+
     setKingDi(null)
 
     if(!gameOn && turn === props.num && !playerOut) youWin()
@@ -72,6 +74,8 @@ function Player(props){
   }, [di, duplicate])
 
   //player component functionalities
+
+  const placeholder = 'Player ' + props.num;
 
   const onPlayerNameChangeUpdate = (e) => {
     e.preventDefault();
@@ -99,23 +103,12 @@ function Player(props){
     setTogglePurse(true)
   }
 
-  const placeholder = 'Player ' + props.num;
-
-  //game functionalities
-
-  const rollDi = () => {
-
-    setPurse(purse -1)
-    setTotalPot(totalPot +1)
-
-    const roll = Math.floor(Math.random() * (6 - 1 + 1) + 1)
-
-    return roll
-  }
-
   const rollCycle = (e) => {
     e.preventDefault()
     console.log('rolling')
+
+    setPurse(purse -1)
+    setTotalPot(totalPot +1)
 
     const myRoll = rollDi()
 
@@ -126,6 +119,39 @@ function Player(props){
     }
     setDi(myRoll);
     return
+  }
+
+  const challengeRoll = (e) => {
+    e.preventDefault()
+
+    console.log('challenging')
+
+    const challenge = rollDi()
+
+    setChallengerDi(challenge)
+
+    return
+  }
+
+  const defenderRoll = (e) => {
+    e.preventDefault()
+
+    console.log('defending')
+
+    const defender = rollDi()
+
+    setDefenderDi(defender)
+
+    return
+  }
+
+  //game functionalities
+
+  const rollDi = () => {
+
+    const roll = Math.floor(Math.random() * (6 - 1 + 1) + 1)
+
+    return roll
   }
 
   const kingCheck = () => {
@@ -145,9 +171,7 @@ function Player(props){
         setKingDi(di)
       }
       else if(di === kingDi){
-        //setDuel(true)
-        setEndTurn(true)
-        console.log('duel would occur')
+        setDuel(true)
         return
       }
     }
@@ -198,8 +222,9 @@ function Player(props){
   }
 
   return(
-    <>
-      {localKing && (<img src="https://www.svgrepo.com/show/64136/crown.svg" alt="crown"  width="100" height="100"></img>)}
+    <div className="player" >
+      {localKing && (<img src="https://www.svgrepo.com/show/64136/crown.svg" alt="crown"  width="50" height="50"></img>)}
+      {playerOut && (<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ProhibitionSign2.svg/1280px-ProhibitionSign2.svg.png" alt="cancel"  width="50" height="50"></img>)}
       <form id="formBasicPlayer">
         <label> {placeholder} </label>
         {!toggleName && (
@@ -230,13 +255,14 @@ function Player(props){
 
       </form>
 
-      {gameOn && turn === props.num && (<button onClick={rollCycle}> 
+      {gameOn && turn === props.num && !duel && (<div> <button onClick={rollCycle}> 
         Roll
-      </button>)}
-      {gameOn && turn === props.num && (<button onClick={imOut}> 
-        Out
-      </button>)}
-    </>
+      </button> <button onClick={imOut}> 
+        I'm Out
+      </button> </div>)}
+      {duel && turn === props.num && (<button onClick={challengeRoll}> Challenge Roll </button>)}
+      {duel && king === props.num && (<button onClick={defenderRoll}> Defend Roll </button>)}
+    </div>
   )
 
 };
