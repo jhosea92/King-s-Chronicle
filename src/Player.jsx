@@ -1,13 +1,15 @@
 import React, {useState, useContext, useEffect} from "react";
-//import './App.css'
+import './Player.css'
 import { StateContext } from "./context/StateContext";
+import crown from "./assets/goldcrown.png"
+import cancel from "./assets/cancel.png"
 
 
 function Player(props){
 
   const [playerName, setPlayerName] = useState('');
   const [playerNameChange, setPlayerNameChange] = useState('')
-  const [purse, setPurse] = useState(1)
+  const [purse, setPurse] = useState(10)
   const [purseChange, setPurseChange] = useState(10)
   const [toggleName, setToggleName] = useState(false)
   const [togglePurse, setTogglePurse] = useState(false)
@@ -15,7 +17,7 @@ function Player(props){
   const[localKing, setLocalKing] = useState(false)
 
 
-  const {di, setDi, totalPot, setTotalPot, gameOn, setGameOn, turn, playerCount, outCount, setOutCount, king, kingDi, duplicate, setDuplicate, setEndTurn, setKing, setKingDi, duel, setDuel, setChallengerDi, setDefenderDi} = useContext(StateContext)
+  const {di, setDi, totalPot, setTotalPot, gameOn, setGameOn, turn, players, setPlayers, outCount, setOutCount, king, kingDi, duplicate, setDuplicate, setEndTurn, setKing, setKingDi, duel, setDuel, setChallengerDi, setDefenderDi, setRollAgain} = useContext(StateContext)
 
   //if the king changes, updates player component to turn crown on or off
   useEffect(() => {
@@ -28,8 +30,8 @@ function Player(props){
   //if the turn changes, checks if player is out or is last player in
   useEffect(() => {
 
-    console.log('turn', turn)
-    console.log('player '+ props.num + ' playerOut: ', playerOut)
+    // console.log('turn', turn)
+    // console.log('player '+ props.num + ' playerOut: ', playerOut)
     
     //if current player is out, it will go to the next turn
     if(playerOut && turn === props.num) {
@@ -38,9 +40,9 @@ function Player(props){
     }
     //else at the top of your turn it will check if you are the last player
     //and if so, it will end the game
-    else if(outCount === playerCount -1 && !playerOut && turn === props.num) {
-      console.log('outCount', outCount)
-      console.log('playerCount',playerCount)
+    else if(outCount === players.length -1 && !playerOut && turn === props.num) {
+      // console.log('outCount', outCount)
+      // console.log('playerCount',players.length)
       setGameOn(false)
     } 
     //if the turn changes and you have 0 money imOut will fire
@@ -61,7 +63,7 @@ function Player(props){
 
     if(!gameOn && turn === props.num && !playerOut) youWin()
     else if(!gameOn && turn > 0){
-      console.log('resetting player ' + props.num)
+      // console.log('resetting player ', props.num)
       setPurseChange(purse)
       setTogglePurse(false)
       setPlayerOut(false)
@@ -69,6 +71,15 @@ function Player(props){
   },[gameOn])
 
   useEffect(() => {
+
+    //console.log('di changed')
+
+    if(di === 3){
+      //console.log('should be roll again')
+      setRollAgain(true)
+      return
+    }
+
     //conditional to fire kingCheck only for player whose turn it is
     if(turn === props.num) kingCheck()
   }, [di, duplicate])
@@ -105,7 +116,7 @@ function Player(props){
 
   const rollCycle = (e) => {
     e.preventDefault()
-    console.log('rolling')
+    //console.log('rolling')
 
     setPurse(purse -1)
     setTotalPot(totalPot +1)
@@ -114,21 +125,34 @@ function Player(props){
 
     if(myRoll === 1 && turn === props.num) imOut();
     if(myRoll === di) {
-      console.log('duplicate roll')
+      //console.log('duplicate roll')
       setDuplicate(!duplicate)
     }
     setDi(myRoll);
     return
   }
 
+  const pass = (e) => {
+    e.preventDefault()
+
+    setEndTurn(true)
+    return
+
+  }
+
   const challengeRoll = (e) => {
     e.preventDefault()
 
-    console.log('challenging')
+    //console.log('challenging')
 
-    const challenge = rollDi()
+    const challenger = rollDi()
 
-    setChallengerDi(challenge)
+    if(challenger === 1) {
+      setPlayerOut(true)
+      setOutCount(outCount +1)
+    }
+
+    setChallengerDi(challenger)
 
     return
   }
@@ -136,13 +160,31 @@ function Player(props){
   const defenderRoll = (e) => {
     e.preventDefault()
 
-    console.log('defending')
+    //console.log('defending')
 
     const defender = rollDi()
+    
+    if(defender === 1) {
+      setPlayerOut(true)
+      setOutCount(outCount +1)
+    }
 
     setDefenderDi(defender)
 
     return
+  }
+
+  //removes the player component from the playerContainer
+  const removePlayer = (e) =>{
+    if(players.length > 1) {
+      for(let i = 0; i < players.length; i++){
+        //console.log('removing player')
+        if(players[i].props.num === props.num) {
+          setPlayers(players.toSpliced(i, 1));
+          break;
+        }
+      }
+    }
   }
 
   //game functionalities
@@ -158,15 +200,15 @@ function Player(props){
 
     //if it's not the king's turn or the player rolled anything besides a 1
     if(turn !== king && di !== 1){
-      console.log('enter 1')
+      //console.log('enter 1')
       if(di > kingDi){
-        console.log('enter 1-1')
+        //console.log('enter 1-1')
         setKing(turn)
         setKingDi(di)
       }
       
       else if(kingDi === 6 && di === 2){
-        console.log('enter 1-2')
+        //console.log('enter 1-2')
         setKing(turn)
         setKingDi(di)
       }
@@ -177,19 +219,19 @@ function Player(props){
     }
     //if it's the king's turn
     else if(king === turn) {
-      console.log('enter 2')
+      //console.log('enter 2')
       if(di === kingDi) {
-        console.log('enter 2-1')
+        //console.log('enter 2-1')
         setGameOn(false)
         return
         //setTurn(turn -1)
       }
       else if(di > kingDi) {
-        console.log('enter 2-2')
+        //console.log('enter 2-2')
         setKingDi(di)
       }
         else if(playerOut){
-        console.log('enter 2-3')
+        //console.log('enter 2-3')
         setLocalKing(false)
         setKing(null)
         setKingDi(null)
@@ -202,7 +244,7 @@ function Player(props){
 
   const youWin = () => {
     if(king !== turn) setKing(props.num)
-    console.log('winner' + props.num)
+    //console.log('winner' + props.num)
     setPurseChange(purse + totalPot)
     setTogglePurse(false)
     return
@@ -213,22 +255,24 @@ function Player(props){
       setKing(null)
       setKingDi(null)
     }
-    console.log('setting player ' + props.num +' out')
+    //console.log('setting player ' + props.num +' out')
     setPlayerOut(true)
     setOutCount(outCount +1)
-    console.log('outCount', outCount +1)
+    //console.log('outCount', outCount +1)
     setEndTurn(true)
     return
   }
 
   return(
     <div className="player" >
-      {localKing && (<img src="https://www.svgrepo.com/show/64136/crown.svg" alt="crown"  width="50" height="50"></img>)}
-      {playerOut && (<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ProhibitionSign2.svg/1280px-ProhibitionSign2.svg.png" alt="cancel"  width="50" height="50"></img>)}
-      <form id="formBasicPlayer">
+      <div>
+      {localKing && (<img src={crown} alt="crown"  width="75"></img>)}
+      {playerOut && (<img src={cancel} alt="cancel"  width="50" height="50"></img>)}
+      </div>
+      <form id="formBasicPlayer" >
         <label> {placeholder} </label>
         {!toggleName && (
-        <>
+        <div>
         <input
         id="playerName"
         type="text"
@@ -237,7 +281,7 @@ function Player(props){
         onChange={onPlayerNameChangeUpdate}
         />
         <button onClick={onSubmitPlayerName}> Submit Name </button>
-        </>
+        </div>
         )}
         {toggleName && (
           <p>{playerName}</p>
@@ -254,14 +298,23 @@ function Player(props){
         {togglePurse && (<p > {purse} </p>)}
 
       </form>
-
-      {gameOn && turn === props.num && !duel && (<div> <button onClick={rollCycle}> 
-        Roll
-      </button> <button onClick={imOut}> 
-        I'm Out
-      </button> </div>)}
+      <div>
+        {!gameOn && (<button onClick={removePlayer}>Leave the Table</button>)}
+      {gameOn && turn === props.num && !duel && !playerOut &&(
+        <div> <button onClick={rollCycle}> 
+          Roll
+        </button> 
+        <button onClick={imOut}> 
+          I'm Out
+        </button>
+        {king === props.num && 
+        <button onClick={pass}>
+          Pass
+          </button>} 
+        </div>)}
       {duel && turn === props.num && (<button onClick={challengeRoll}> Challenge Roll </button>)}
       {duel && king === props.num && (<button onClick={defenderRoll}> Defend Roll </button>)}
+      </div>
     </div>
   )
 

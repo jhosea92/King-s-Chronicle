@@ -4,7 +4,7 @@ const StateContext = createContext(null);
 
 const StateProvider = ({children}) => {
   const [totalPot, setTotalPot] = useState(0)
-  const [playerCount, setPlayerCount] = useState(1);
+  const [players, setPlayers] = useState([])
   const [di, setDi] = useState(null)
   const [gameOn, setGameOn] = useState(false)
   const [turn, setTurn] = useState(0);
@@ -16,9 +16,10 @@ const StateProvider = ({children}) => {
   const [duel, setDuel] = useState(false)
   const [defenderDi, setDefenderDi] = useState(null)
   const [challengerDi, setChallengerDi] = useState(null)
+  const [rollAgain, setRollAgain] = useState(false)
  
   return(
-    <StateContext.Provider value={{totalPot, setTotalPot, di, setDi, gameOn, setGameOn, playerCount, setPlayerCount, turn, setTurn, outCount, setOutCount, king, setKing, kingDi, setKingDi, endTurn, setEndTurn, duplicate, setDuplicate, duel, setDuel, challengerDi, setChallengerDi, defenderDi, setDefenderDi}}> 
+    <StateContext.Provider value={{totalPot, setTotalPot, di, setDi, gameOn, setGameOn, players, setPlayers, turn, setTurn, outCount, setOutCount, king, setKing, kingDi, setKingDi, endTurn, setEndTurn, duplicate, setDuplicate, duel, setDuel, challengerDi, setChallengerDi, defenderDi, setDefenderDi, rollAgain, setRollAgain}}> 
       {children}
     </StateContext.Provider>
   )

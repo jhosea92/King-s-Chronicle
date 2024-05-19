@@ -1,27 +1,32 @@
 #root {
-  max-width: 1280px;
+  /* max-width: 75vw; */
+  width: 100vw;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  display: flex; 
+  justify-content:space-between; 
+  background-color: #1b5415;
+
+
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.box {
+  max-width: 90vw;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex; 
+  justify-content: space-between; 
+
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+@media only screen and (max-width: 1000px) {
+  .box{
+    width: 50em;
+  }
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
+  
 
 .card {
-  padding: 2em;
 }
 
-.read-the-docs {
-  color: #888;
-}
